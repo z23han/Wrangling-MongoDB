@@ -20,12 +20,31 @@ def split_file(filename):
     # As a hint - each patent declaration starts with the same line that was causing the error
     # The new files should be saved with filename in the following format:
     # "{}-{}".format(filename, n) where n is a counter, starting from 0.
+    f = open(filename, "r")
 
-    pass
+    n = 0
+    newFileName = "{}-{}".format(filename, n)
+    f1 = open(newFileName, "w")
+    start = 0
+    for line in f:
+        if line.startswith("<?xml") and start == 1:
+            f1.close()
+            n += 1
+            newFileName = "{}-{}".format(filename, n)
+            f1 = open(newFileName, "w")
+        f1.write(line)
+        if start == 0:
+            start = 1
+    f1.close()
+    f.close()
+
+    return
 
 
 def test():
+    #get_root(PATENTS)
     split_file(PATENTS)
+
     for n in range(4):
         try:
             fname = "{}-{}".format(PATENTS, n)
@@ -35,6 +54,7 @@ def test():
             f.close()
         except:
             print "Could not find file {}. Check if the filename is correct!".format(fname)
+
 
 
 test()
