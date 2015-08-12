@@ -56,7 +56,7 @@ def article_overview(kind, period):
 
 def query_site(url, target, offset):
     # This will set up the query with the API key and offset
-    # Web services often use offset paramter to return data in small chunks
+    # Web services often use offset parameter to return data in small chunks
     # NYTimes returns 20 articles per request, if you want the next 20
     # You have to provide the offset parameter
     if API_KEY["popular"] == "" or API_KEY["article"] == "":
