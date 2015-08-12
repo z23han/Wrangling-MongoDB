@@ -18,6 +18,7 @@ You can write helper functions for checking the data and writing the files, but 
 """
 import csv
 import pprint
+import re
 
 INPUT_FILE = 'autos.csv'
 OUTPUT_GOOD = 'autos-valid.csv'
@@ -28,18 +29,39 @@ def process_file(input_file, output_good, output_bad):
     with open(input_file, "r") as f:
         reader = csv.DictReader(f)
         header = reader.fieldnames
-
-        #COMPLETE THIS FUNCTION
-
-
+        good_data = []
+        bad_data = []
+        for ele in reader:
+            newEle = dict(ele)
+            validYear = False
+            prodStartYear = ele['productionStartYear']
+            if prodStartYear != None and re.search(r'[\d]+[-][\d]+', prodStartYear):
+                year = prodStartYear.split('-')[0]
+                newEle['productionStartYear'] = year
+                if int(year) >= 1886 and int(year) <= 2014:
+                    validYear = True
+            URI = ele['URI']
+            if 'dbpedia.org' in URI:
+                if validYear:
+                    good_data.append(newEle)
+                else:
+                    bad_data.append(newEle)
 
     # This is just an example on how you can use csv.DictWriter
     # Remember that you have to output 2 files
     with open(output_good, "w") as g:
         writer = csv.DictWriter(g, delimiter=",", fieldnames= header)
         writer.writeheader()
-        for row in YOURDATA:
+        for row in good_data:
             writer.writerow(row)
+
+    with open(output_bad, "w") as g:
+        writer = csv.DictWriter(g, delimiter=",", fieldnames= header)
+        writer.writeheader()
+        for row in bad_data:
+            writer.writerow(row)
+
+    return
 
 
 def test():
