@@ -27,11 +27,45 @@ FIELDS = ["name", "timeZone_label", "utcOffset", "homepage", "governmentType_lab
 
 def audit_file(filename, fields):
     fieldtypes = {}
-
-    # YOUR CODE HERE
-
+    f = codecs.open(filename, "r")
+    reader = csv.DictReader(f)
+    header = reader.fieldnames
+    citiesLines = []
+    for row in reader:
+        citiesLines.append(row)
+    for field in fields:
+        if field in header:
+            typeList = []
+            for row in citiesLines:
+                if row[field] == "" or row[field] == "NULL":
+                    typeList.append(type(None))
+                elif row[field].startswith('{'):
+                    typeList.append(type([]))
+                elif isInt(row[field]):
+                    typeList.append(type(1))
+                elif isFloat(row[field]):
+                    typeList.append(type(1.1))
+                else:
+                    typeList.append(type(""))
+            fieldtypes[field] = set(typeList)
 
     return fieldtypes
+
+def isInt(value):
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def isFloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
 
 
 def test():
@@ -39,8 +73,8 @@ def test():
 
     pprint.pprint(fieldtypes)
 
-    assert fieldtypes["areaLand"] == set([type(1.1), type([]), type(None)])
-    assert fieldtypes['areaMetro'] == set([type(1.1), type(None)])
+    assert fieldtypes["areaLand"] == set([type(1.1), type([]), type(None), type("")])
+    assert fieldtypes['areaMetro'] == set([type(1.1), type(None), type("")])
     
 if __name__ == "__main__":
     test()
