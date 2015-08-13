@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-In this problem set you work with cities infobox data, audit it, come up with a cleaning idea and then clean it up.
+In this problem set you work with cities info box data, audit it, come up with a cleaning idea and then clean it up.
 
 If you look at the full city data, you will notice that there are couple of values that seem to provide
 the same information in different formats: "point" seems to be the combination of "wgs84_pos#lat" and "wgs84_pos#long".
 However we do not know if that is the case and should check if they are equivalent.
 
-Finish the function check_loc(). It will recieve 3 strings, first will be the combined value of "point" and then the
+Finish the function check_loc(). It will receive 3 strings, first will be the combined value of "point" and then the
 "wgs84_pos#" values separately. You have to extract the lat and long values from the "point" and compare
 to the "wgs84_pos# values and return True or False.
 
@@ -25,8 +25,10 @@ CITIES = 'cities.csv'
 
 def check_loc(point, lat, longi):
     # YOUR CODE HERE
-    
-    pass
+    if not (type(point) == type("") and type(lat) == type("") and type(longi) == type("")):
+        raise ValueError("input should be string type")
+    [pointLat, pointLong] = point.split()
+    return (pointLat==lat and pointLong==longi)
 
 
 def process_file(filename):
@@ -48,6 +50,7 @@ def process_file(filename):
 
 
 def test():
+
     assert check_loc("33.08 75.28", "33.08", "75.28") == True
     assert check_loc("44.57833333333333 -91.21833333333333", "44.5783", "-91.2183") == False
 

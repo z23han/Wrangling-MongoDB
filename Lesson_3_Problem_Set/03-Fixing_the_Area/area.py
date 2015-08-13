@@ -23,12 +23,25 @@ CITIES = 'cities.csv'
 def fix_area(area):
 
     # YOUR CODE HERE
+    if area == 'NULL':
+        return None
+    elif area.startswith('{'):
+        area = area.replace('{', '')
+        if area.endswith('}'):
+            area = area.replace('}', '')
+        dataList = area.split('|')
+        retArea = ''
+        for data in dataList:
+            if len(data) > len(retArea):
+                retArea = str(data)
+        return float(retArea)
+    else:
+        return float(area)
 
-    return area
 
+global_name = ['areaLand', 'name', 'areaMetro', 'populationTotal', 'postalCode']
 
-
-def process_file(filename):
+def process_file(filename, key):
     # CHANGES TO THIS FUNCTION WILL BE IGNORED WHEN YOU SUBMIT THE EXERCISE
     data = []
 
@@ -42,22 +55,23 @@ def process_file(filename):
         # processing file
         for line in reader:
             # calling your function to fix the area value
-            if "areaLand" in line:
-                line["areaLand"] = fix_area(line["areaLand"])
+            if key in line:
+                line[key] = fix_area(line[key])
             data.append(line)
 
     return data
 
 
 def test():
-    data = process_file(CITIES)
+    nameNum = 0
+    data = process_file(CITIES, global_name[nameNum])
 
     print "Printing three example results:"
     for n in range(5,8):
-        pprint.pprint(data[n]["areaLand"])
+        pprint.pprint(data[n][global_name[nameNum]])
 
-    assert data[8]["areaLand"] == 55166700.0
-    assert data[3]["areaLand"] == None
+    #assert data[8][global_name[1]] == 55166700.0
+    #assert data[3][global_name[1]] == None
 
 
 if __name__ == "__main__":

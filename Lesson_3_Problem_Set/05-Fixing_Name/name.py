@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-In this problem set you work with cities infobox data, audit it, come up with a cleaning idea and then clean it up.
+In this problem set you work with cities info box data, audit it, come up with a cleaning idea and then clean it up.
 
 In the previous quiz you recognized that the "name" value can be an array (or list in Python terms).
 It would make it easier to process and query the data later, if all values for the name 
 would be in a Python list, instead of being just a string separated with special characters, like now.
 
-Finish the function fix_name(). It will recieve a string as an input, and it has to return a list
+Finish the function fix_name(). It will receive a string as an input, and it has to return a list
 of all the names. If there is only one name, the list with have only one item in it, if the name is "NONE",
 the list should be empty.
 The rest of the code is just an example on how this function can be used
@@ -22,8 +22,20 @@ CITIES = 'cities.csv'
 def fix_name(name):
 
     # YOUR CODE HERE
-
-    return name
+    retName = []
+    if name == "NULL":
+        return []
+    elif name.startswith("{"):
+        name = name.replace("{", "")
+        if name.endswith("}"):
+            name = name.replace("}", "")
+        nameList = name.split("|")
+        for n in nameList:
+            retName.append(n)
+        return retName
+    else:
+        retName.append(name)
+        return retName
 
 
 def process_file(filename):
@@ -38,6 +50,7 @@ def process_file(filename):
             # calling your function to fix the area value
             if "name" in line:
                 line["name"] = fix_name(line["name"])
+                print(line["name"])
             data.append(line)
     return data
 
