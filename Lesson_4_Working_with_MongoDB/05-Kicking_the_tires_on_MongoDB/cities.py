@@ -1,5 +1,5 @@
 """
-Your task is to sucessfully run the exercise to see how pymongo works
+Your task is to successfully run the exercise to see how pymongo works
 and how easy it is to start using it.
 You don't actually have to change anything in this exercise,
 but you can change the city name in the add_city function if you like.
@@ -10,14 +10,14 @@ you have to install MongoDB (see Instructor comments for link to installation in
 and uncomment the get_db function.
 """
 
-"""
+
 def get_db():
     from pymongo import MongoClient
     client = MongoClient('localhost:27017')
     # 'examples' here is the database name. It will be created if it does not exist.
     db = client.examples
     return db
-"""
+
 
 def add_city(db):
     db.cities.insert({"name" : "Chicago"})
