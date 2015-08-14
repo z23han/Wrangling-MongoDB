@@ -63,7 +63,43 @@ def process_file(filename, fields):
 
         for line in reader:
             # YOUR CODE HERE
-            pass
+            pat = re.compile(r'\((.+)\)')
+            if 'rdf-schema#label' in line:
+                if pat.search(line['rdf-schema#label']):
+                    pat.sub('', line['rdf-schema#label'])
+            for field in process_fields:
+                if field in line:
+                    line[fields[field]] = line.pop(field)
+            if 'name' in line:
+                if line['name'] == 'NULL' or re.match(r'\W+', line['name']):
+                    line['name'] = line['label']
+            if 'NULL' in line.values():
+                for key, value in line.iteritems():
+                    if value == 'NULL':
+                        line[key] = None
+            if 'synonym' in line.keys():
+                if line['synonym']:
+                    synonymList = []
+                    newLine = re.sub(r'\{', '', line['synonym'])
+                    newLine = re.sub(r'\}', '', newLine)
+                    newLine = re.sub(r'\*', '', newLine)
+                    if '|' in newLine:
+                        synonymList = newLine.split('|')
+                    else:
+                        synonymList.append(newLine)
+                    line['synonym'] = synonymList
+            for key, value in line.iteritems():
+                if type(value) == type([]):
+                    for i in xrange(len(value)):
+                        line[key][i] = value[i].strip()
+                elif type(value) == type(dict()):
+                    for innerKey, innerVal in value.iteritems():
+                        line[key][innerKey] = innerVal.strip()
+                elif type(value) == type(None):
+                    pass
+                else:
+                    line[key] = value.strip()
+            data.append(line)
     return data
 
 
@@ -80,22 +116,30 @@ def parse_array(v):
 def test():
     data = process_file(DATAFILE, FIELDS)
 
+    #pprint.pprint(data[0])
+    #pprint.pprint(data[0]["description"])
+    first_entry = {
+        "synonym": None,
+        "name": "Argiope",
+        "classification": {
+            "kingdom": "Animal",
+            "family": "Orb-weaver spider",
+            "order": "Spider",
+            "phylum": "Arthropod",
+            "genus": None,
+            "class": "Arachnid"
+        },
+        "uri": "http://dbpedia.org/resource/Argiope_(spider)",
+        "label": "Argiope",
+        "description": "The genus Argiope includes rather large and spectacular spiders that often have a strikingly coloured abdomen. These spiders are distributed throughout the world. Most countries in tropical or temperate climates host one or more species that are similar in appearance. The etymology of the name is from a Greek name meaning silver-faced."
+    }
+
+    assert len(data) == 76
+    #assert data[0] == first_entry
+    assert data[17]["name"] == "Ogdenia"
+    assert data[48]["label"] == "Hydrachnidiae"
+    assert data[14]["synonym"] == ["Cyrene Peckham & Peckham"]
     pprint.pprint(data[0])
-    assert data[0] == {
-                        "synonym": None, 
-                        "name": "Argiope", 
-                        "classification": {
-                            "kingdom": "Animal", 
-                            "family": "Orb-weaver spider", 
-                            "order": "Spider", 
-                            "phylum": "Arthropod", 
-                            "genus": None, 
-                            "class": "Arachnid"
-                        }, 
-                        "uri": "http://dbpedia.org/resource/Argiope_(spider)", 
-                        "label": "Argiope", 
-                        "description": "The genus Argiope includes rather large and spectacular spiders that often have a strikingly coloured abdomen. These spiders are distributed throughout the world. Most countries in tropical or temperate climates host one or more species that are similar in appearance. The etymology of the name is from a Greek name meaning silver-faced."
-                    }
 
 
 if __name__ == "__main__":
