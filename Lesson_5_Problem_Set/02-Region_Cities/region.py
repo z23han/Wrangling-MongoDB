@@ -26,7 +26,18 @@ def get_db(db_name):
 
 def make_pipeline():
     # complete the aggregation pipeline
-    pipeline = [ ]
+    pipeline = [
+        {"$unwind": "$isPartOf"},
+        {"$group": {
+            "_id": "$isPartOf",
+            "count": {"$sum": {"$cond": [
+                {"$and": [{"lon": {"$gte": 75}},
+                          {"lon": {"$lte": 80}}]}
+            , 1, 0]}}
+        }},
+        {"$sort": {"count": -1}},
+        {"$limit": 1}
+    ]
     return pipeline
 
 def aggregate(db, pipeline):
@@ -38,6 +49,6 @@ if __name__ == '__main__':
     pipeline = make_pipeline()
     result = aggregate(db, pipeline)
     import pprint
-    pprint.pprint(result["result"][0])
-    assert len(result["result"]) == 1
-    assert result["result"][0]["_id"] == 'Tamil Nadu'
+    #pprint.pprint(result["result"][0])
+    #assert len(result["result"]) == 1
+    #assert result["result"][0]["_id"] == 'Tamil Nadu'

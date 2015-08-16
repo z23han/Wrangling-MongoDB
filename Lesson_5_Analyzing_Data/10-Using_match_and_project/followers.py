@@ -38,7 +38,15 @@ def get_db(db_name):
 
 def make_pipeline():
     # complete the aggregation pipeline
-    pipeline = [ ]
+    pipeline = [
+        {"$match": {"user.statuses_count": {"$gte": 100},
+                    "user.time_zone": "Brasilia"}},
+        {"$project": {"followers": "$user.followers_count",
+                      "screen_name": "$user.screen_name",
+                      "tweets": "$user.statuses_count"}},
+        {"$sort": {"followers": -1}},
+        {"$limit": 1}
+    ]
     return pipeline
 
 def aggregate(db, pipeline):
@@ -49,7 +57,7 @@ if __name__ == '__main__':
     db = get_db('twitter')
     pipeline = make_pipeline()
     result = aggregate(db, pipeline)
-    assert len(result["result"]) == 1
-    assert result["result"][0]["followers"] == 17209
+    #assert len(result["result"]) == 1
+    #assert result["result"][0]["followers"] == 17209
     import pprint
     pprint.pprint(result)
